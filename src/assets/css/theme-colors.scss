@@ -1,0 +1,33 @@
+:root {
+    --background-color: #2C2C2A;
+    --background-mute: #3F3F3B;
+    --background-3: #4A4945;
+    --primary-color: #EAE7DC;
+    --secondary-color: #DFDCD1;
+    --primary-mute: #DFDCD1A0;
+    --accent: #B4ED5A;
+    --accentb: #E36B60;
+    --accentb-mute: #E36B60;
+    --accentc: #95E4D3;
+}
+
+[theme="twilight"] {
+    --background-color: #1E2448;
+    --background-mute: #3F487D;
+    --primary-color: #ECF2FE;
+    --secondary-color: #EAE8F8;
+    --primary-mute: #EAE8F880;
+    --accent: #3381FF;
+    --accentb: #F977B1;
+    --accentb-mute: #F977B1;
+    --accentc: #7BEAC1;
+}
+
+[theme="dark"] {
+    --background-color: #2c3e50;
+    --primary-color: #eeefff;
+    --secondary-color: #c8d2ec;
+    --primary-mute: #96a2c2;
+    --accent: #a0e7f3;
+    --accentb: #a0acf3;
+}
