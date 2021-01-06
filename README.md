@@ -1,4 +1,4 @@
-# typingtest
+# keeb smith
 
 ## Project setup
 ```
