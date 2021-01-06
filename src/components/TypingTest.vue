@@ -7,11 +7,12 @@
             <input id="input-box" ref="inputBox" placeholder="Type words here..." onpaste="return false" @input="inputChanged($event.target, $event.target.value)">
         </div>
         <div id="btn-container">
-            <div class="btn accent" @click="restart()">Restart</div>
+            <div class="btn accent" @click="restart()">⏎ Restart</div>
             <div v-for="(count, index) in wordCountSettings" :key="index" class="btn" :ref="'word-count-' + count" @click="selectWordCount($event.target, count)"> {{ count }}</div>
             <div v-for="(wordSet, name) in wordSets" :key="name" class="btn" :ref="'word-set-' + name" @click="selectWordSet($event.target, name)"> {{ wordSet.metadata.name }}</div>
+            <div :class="'btn' + (isAcceptingErrors ? ' selected-alt2' : '')" @click="isAcceptingErrors = !isAcceptingErrors">Accept Errors</div>
         </div>
-        <span id="speed-counter" v-if="isCompleted">{{ Math.round(cpm / 5) }} WPM ({{ cpm }} CPM)</span>
+        <div id="speed-counter" v-if="isCompleted">{{ Math.round(cpm / 5) }} WPM ({{ cpm }} CPM)</div>
     </div>
 </template>
 
@@ -29,10 +30,13 @@ export default {
             currentWordCountSetting: 25,
             currentWordCountSettingBtn: this.$refs["word-count-25"],
 
-            totalCharCount: 0,
-
             currentSet: "commonWords",
             currentSetBtn: null,
+
+            errorCount: 0,
+            isAcceptingErrors: false,
+
+            totalCharCount: 0,
 
             wordList: [],
             wordRefs: [],
@@ -70,7 +74,12 @@ export default {
             this.wordRefs[this.currentWord].charIndex = text.length;
             this.wordRefs[this.currentWord].inputText = text;
 
-            if (text.slice(-1) == " " && text.slice(0, -1) == currentWordText) {
+            if (text.slice(-1) == " " && (text.slice(0, -1) == currentWordText || this.isAcceptingErrors)) {
+                if (this.isAcceptingErrors && text.slice(0, -1) != currentWordText) { // user made an error, but still accept
+                    this.wordRefs[this.currentWord].errorIndex = errorIndex;
+                    this.errorCount++;
+                }
+
                 this.currentWord++;
 
                 if (this.currentWord >= this.wordList.length) {

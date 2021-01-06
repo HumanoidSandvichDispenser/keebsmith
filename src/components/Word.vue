@@ -5,12 +5,12 @@
             {{ errorIndex == -1 ? word.slice(0, charIndex) : word.slice(0, errorIndex) }}
         </div>
         <div v-if="errorIndex != -1" class="error" :style="[isCurrentWord ? 'text-decoration: underline;' : '']">
-            {{ word.slice(errorIndex, charIndex) + (charIndex > word.length  ? "●".repeat(charIndex - word.length) : "") }}
+            {{ word.slice(errorIndex, charIndex) + (charIndex > word.length  ? "•".repeat(charIndex - word.length) : "") }}
         </div>
         <div class="right" :style="[isCurrentWord ? 'text-decoration: underline;' : '']">
             {{ word.slice(charIndex) }}
         </div>
-        <div v-show="isCurrentWord && errorIndex != -1" class="error-input"> {{ inputText.replaceAll(" ", "⎵") }} </div>
+        <div v-show="errorIndex != -1" class="error-input"> {{ inputText.replaceAll(" ", "⎵") }} </div>
     </div>
 </template>
 
