@@ -1,10 +1,10 @@
 <template>
     <div id="typing-test">
-            <div id="word-list" ref="wordList">
+        <div id="word-list" ref="wordList">
             <Word v-for="(word, index) in wordList" :key="index" :word="word" :ref="setWordRef" :isCurrentWord="index == currentWord"/>
         </div>
         <div id="textarea" style="float: left;">
-            <input id="input-box" ref="inputBox" placeholder="Type words here..." onpaste="return false" @keydown="keydown" @input="inputChanged($event.target, $event.target.value)">
+            <input id="input-box" ref="inputBox" placeholder="Type words here..." onpaste="return false" @keyup.enter="onEnter()" @input="inputChanged($event.target, $event.target.value)">
         </div>
         <div id="btn-container">
             <div class="btn accent" @click="restart()">⏎ Restart</div>
@@ -23,10 +23,10 @@
 </template>
 
 <script>
-import Word from "./Word"
-import ButtonGroup from "./ButtonGroup"
+import Word from "./Word";
+import ButtonGroup from "./ButtonGroup";
 // eslint-disable-next-line no-unused-vars
-const words = require("../assets/words.json")
+const words = require("../assets/words.json");
 
 export default {
     data() {
@@ -79,8 +79,10 @@ export default {
          * Triggers when user inputs to the textbox
          */
         inputChanged: function(inputBox, text) {
-            if (!this.isStarted)
-            {
+            if (this.currentWord >= this.wordList.length)
+                return;
+
+            if (!this.isStarted) {
                 this.isStarted = true;
                 this.startTime = new Date().valueOf() / 1000;
             }
@@ -88,30 +90,32 @@ export default {
             let currentWordText = this.wordRefs[this.currentWord].getWord();
             let errorIndex = this.findError(text, currentWordText);
 
-            this.wordRefs[this.currentWord].charIndex = text.length;
             this.wordRefs[this.currentWord].inputText = text;
-
-            if (text.slice(-1) == " " && (text.slice(0, -1) == currentWordText || this.settings.flags.isAcceptingErrors)) {
+            this.wordRefs[this.currentWord].charIndex = text.length;
+            
+            if (this.currentWord == this.wordList.length - 1 && text == currentWordText) { // last word and typed correctly
+                this.currentWord++;
+                this.complete();
+            } else if (text.slice(-1) == " " && (text.slice(0, -1) == currentWordText || this.settings.flags.isAcceptingErrors)) {
                 if (this.settings.flags.isAcceptingErrors && text.slice(0, -1) != currentWordText) { // user made an error, but still accept
-                    this.wordRefs[this.currentWord].errorIndex = errorIndex;
+                    this.wordRefs[this.currentWord].errorIndex = errorIndex; // display where the error occurred
                     this.errorCount++;
                 }
 
                 this.currentWord++;
-
-                if (this.currentWord >= this.wordList.length) {
-                    this.restart(true);
-                }
-
                 this.wordRefs[this.currentWord].$el.scrollIntoView();
-
                 inputBox.value = "";
             }
-            else
-            {
+            else {
                 this.wordRefs[this.currentWord].errorIndex = errorIndex;
             }
+        },
 
+        /**
+         * Triggers when the enter key is pressed
+         */
+        onEnter: function() {
+            this.restart();
         },
 
         /**
@@ -130,18 +134,17 @@ export default {
             return errorIndex;
         },
 
+        complete: function() {
+            this.isCompleted = true;
+            this.endTime = new Date().valueOf() / 1000;
+            this.cpm = this.calculateCPM();
+            this.$refs.inputBox.value = "";
+        },
+
         /**
          * Restarts the typing test and sets all data to their initial values
          */
-        restart: function(completed=false) {
-            if (completed) {
-                console.log("completed");
-                this.isCompleted = true;
-                this.endTime = new Date().valueOf() / 1000;
-                this.cpm = this.calculateCPM();
-                console.log("CPM: " + this.cpm);
-            }
-
+        restart: function() {
             this.$refs.inputBox.value = "";
 
             this.isStarted = false;
@@ -163,7 +166,7 @@ export default {
         generateWords: function(count) {
             for (let rep = 0; rep < count; rep++) {
                 let word = this.settings.wordSet.words[Math.floor(Math.random() * this.settings.wordSet.words.length)];
-                this.totalCharCount += word.length + 1; // count spaces in the total char count
+                this.totalCharCount += word.length + (rep < count - 1 ? 1 : 0); // count spaces in the total char count if it's not the last char
                 this.wordList.push(word);
             }
 
@@ -182,7 +185,9 @@ export default {
         /**
          * Returns the user's typing speed in Chars Per Minute
          */
-        calculateCPM: () => Math.round(this.totalCharCount * 60 / (this.endTime - this.startTime)),
+        calculateCPM: function() {
+            return Math.round(this.totalCharCount * 60 / (this.endTime - this.startTime));
+        },
 
         /**
          * Triggers when a user has selected a setting from the buttons
