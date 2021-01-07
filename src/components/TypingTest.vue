@@ -1,23 +1,30 @@
 <template>
     <div id="typing-test">
-        <div id="word-list" ref="wordList">
+            <div id="word-list" ref="wordList">
             <Word v-for="(word, index) in wordList" :key="index" :word="word" :ref="setWordRef" :isCurrentWord="index == currentWord"/>
         </div>
         <div id="textarea" style="float: left;">
-            <input id="input-box" ref="inputBox" placeholder="Type words here..." onpaste="return false" @input="inputChanged($event.target, $event.target.value)">
+            <input id="input-box" ref="inputBox" placeholder="Type words here..." onpaste="return false" @keydown="keydown" @input="inputChanged($event.target, $event.target.value)">
         </div>
         <div id="btn-container">
             <div class="btn accent" @click="restart()">⏎ Restart</div>
-            <div v-for="(count, index) in wordCountSettings" :key="index" class="btn" :ref="'word-count-' + count" @click="selectWordCount($event.target, count)"> {{ count }}</div>
-            <div v-for="(wordSet, name) in wordSets" :key="name" class="btn" :ref="'word-set-' + name" @click="selectWordSet($event.target, name)"> {{ wordSet.metadata.name }}</div>
-            <div :class="'btn' + (isAcceptingErrors ? ' selected-alt2' : '')" @click="isAcceptingErrors = !isAcceptingErrors">Accept Errors</div>
+
+            <ButtonGroup :radioOptions="{ '2 (Burst)': 2, '10': 10, '25': 25, '50': 50, '100': 100, '150': 150, '200': 200 }"
+                default="25" ref="wordCountButton" selectedClass="selected" @changed="settingsChanged($event.target)"/>
+
+            <ButtonGroup :radioOptions="{ 'Common Words': wordSets.commonWords, 'Difficult Words': wordSets.difficultWords }"
+                default="Common Words" ref="wordSetButton" selectedClass="selected-alt" @changed="settingsChanged($event.target)"/>
+
+            <ButtonGroup :checkboxOptions="{ 'Accept Errors': 'isAcceptingErrors' }"
+                ref="flagsButton" selectedClass="selected-alt2" @changed="settingsChanged($event.target)"/>
         </div>
         <div id="speed-counter" v-if="isCompleted">{{ Math.round(cpm / 5) }} WPM ({{ cpm }} CPM)</div>
     </div>
 </template>
 
 <script>
-import Word from "./Word.vue"
+import Word from "./Word"
+import ButtonGroup from "./ButtonGroup"
 // eslint-disable-next-line no-unused-vars
 const words = require("../assets/words.json")
 
@@ -27,14 +34,7 @@ export default {
             wordCountSettings: [ 2, 10, 25, 50, 100, 150 ],
 
             currentWord: 0,
-            currentWordCountSetting: 25,
-            currentWordCountSettingBtn: this.$refs["word-count-25"],
-
-            currentSet: "commonWords",
-            currentSetBtn: null,
-
             errorCount: 0,
-            isAcceptingErrors: false,
 
             totalCharCount: 0,
 
@@ -47,20 +47,37 @@ export default {
             startTime: Number,
             endTime: Number,
             cpm: 0,
+
+            settings: {
+                wordCount: 25,
+                wordSet: words.commonWords,
+                flags: {
+                    isAcceptingErrors: false,
+                }
+            },
+
         }
     },
 
     components: {
-        Word
+        Word,
+        ButtonGroup
     },
 
     methods: {
+        /**
+         * Binds all Word.vue element refs to an array.
+         */
         setWordRef: function(element) {
             if (element) {
                 console.log("set word ref, length")
                 this.wordRefs.push(element);
             }
         },
+
+        /**
+         * Triggers when user inputs to the textbox
+         */
         inputChanged: function(inputBox, text) {
             if (!this.isStarted)
             {
@@ -74,8 +91,8 @@ export default {
             this.wordRefs[this.currentWord].charIndex = text.length;
             this.wordRefs[this.currentWord].inputText = text;
 
-            if (text.slice(-1) == " " && (text.slice(0, -1) == currentWordText || this.isAcceptingErrors)) {
-                if (this.isAcceptingErrors && text.slice(0, -1) != currentWordText) { // user made an error, but still accept
+            if (text.slice(-1) == " " && (text.slice(0, -1) == currentWordText || this.settings.flags.isAcceptingErrors)) {
+                if (this.settings.flags.isAcceptingErrors && text.slice(0, -1) != currentWordText) { // user made an error, but still accept
                     this.wordRefs[this.currentWord].errorIndex = errorIndex;
                     this.errorCount++;
                 }
@@ -96,6 +113,10 @@ export default {
             }
 
         },
+
+        /**
+         * Returns the index in the string where a typographical error has occurred
+         */
         findError: function(text, expected) {
             let errorIndex = -1;
 
@@ -108,6 +129,10 @@ export default {
 
             return errorIndex;
         },
+
+        /**
+         * Restarts the typing test and sets all data to their initial values
+         */
         restart: function(completed=false) {
             if (completed) {
                 console.log("completed");
@@ -127,60 +152,61 @@ export default {
 
             this.currentWord = 0;
 
-            this.generateWords(this.currentWordCountSetting);
+            this.generateWords(this.settings.wordCount);
 
             this.$refs.wordList.scrollTop = 0;
         },
+
+        /**
+         * Generates words to be pushed to wordList
+         */
         generateWords: function(count) {
             for (let rep = 0; rep < count; rep++) {
-                let set = words[this.currentSet];
-                let word = set.words[Math.floor(Math.random() * set.words.length)];
+                let word = this.settings.wordSet.words[Math.floor(Math.random() * this.settings.wordSet.words.length)];
                 this.totalCharCount += word.length + 1; // count spaces in the total char count
                 this.wordList.push(word);
             }
 
             this.resetWordElements();
         },
+
+        /**
+         * Resets all Word.vue elements to their initial state
+         */
         resetWordElements: function() {
             console.log(`resetting ${this.wordRefs.length} word elements`)
             this.wordRefs.forEach((wordRef) => wordRef.reset());
             this.wordRefs = [];
         },
-        calculateCPM: function() {
-            return Math.round(this.totalCharCount * 60 / (this.endTime - this.startTime))
-        },
-        selectWordCount: function(btn, wordCountSetting) {
-            if (this.currentWordCountSettingBtn) {
-                this.currentWordCountSettingBtn.classList.remove("selected");
+
+        /**
+         * Returns the user's typing speed in Chars Per Minute
+         */
+        calculateCPM: () => Math.round(this.totalCharCount * 60 / (this.endTime - this.startTime)),
+
+        /**
+         * Triggers when a user has selected a setting from the buttons
+         */
+        settingsChanged: function(button) {
+            switch (button)
+            {
+                case this.$refs.wordCountButton:
+                    this.settings.wordCount = button.radioValue;
+                    break;
+                case this.$refs.wordSetButton:
+                    this.settings.wordSet = button.radioValue;
+                    break;
+                case this.$refs.flagsButton:
+                    this.settings.flags = button.checkboxValues;
+                    break;
             }
 
-            btn.classList.add("selected");
-            this.currentWordCountSettingBtn = btn;
-
-            this.currentWordCountSetting = wordCountSetting;
             this.restart();
         },
-        selectWordSet: function(btn, setName) {
-            if (this.currentSetBtn) {
-                this.currentSetBtn.classList.remove("selected-alt");
-            }
-
-            btn.classList.add("selected-alt");
-            this.currentSetBtn = btn;
-
-            this.currentSet = setName;
-            this.restart();
-        }
     },
 
     mounted() {
         this.restart();
-
-        this.$refs["word-count-25"].classList.add("selected");
-        this.$refs["word-set-commonWords"].classList.add("selected-alt");
-
-        this.currentWordCountSettingBtn = this.$refs["word-count-25"];
-        this.currentSetBtn = this.$refs["word-set-commonWords"];
     },
 
     beforeUpdate() {

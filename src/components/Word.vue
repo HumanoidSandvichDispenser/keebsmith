@@ -31,6 +31,7 @@ export default {
         },
         isCurrentWord: Boolean,
     },
+
     methods: {
         getWord: function() {
             return this.word;

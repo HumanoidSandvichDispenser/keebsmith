@@ -2,7 +2,8 @@
     "commonWords":
     {
         "metadata": {
-            "name": "Common Words"
+            "name": "Common Words",
+            "description": "Common words used in American English"
         },
         "words": [
             "able",
@@ -18,11 +19,9 @@
             "add",
             "address",
             "admit",
-            "advertise",
             "affect",
             "afford",
             "after",
-            "afternoon",
             "again",
             "against",
             "age",
@@ -54,10 +53,8 @@
             "arrange",
             "art",
             "ask",
-            "associate",
             "assume",
             "attend",
-            "authority",
             "available",
             "aware",
             "away",
@@ -92,7 +89,6 @@
             "birth",
             "bit",
             "black",
-            "bloke",
             "blood",
             "blow",
             "blue",
@@ -108,13 +104,11 @@
             "boy",
             "break",
             "brief",
-            "brilliant",
             "bring",
             "brother",
             "budget",
             "build",
             "bus",
-            "business",
             "busy",
             "but",
             "buy",
@@ -134,7 +128,6 @@
             "centre",
             "certain",
             "chair",
-            "chairman",
             "chance",
             "change",
             "chap",
@@ -166,15 +159,12 @@
             "come",
             "comment",
             "commit",
-            "committee",
             "common",
-            "community",
             "company",
             "compare",
             "complete",
             "compute",
             "concern",
-            "condition",
             "confer",
             "consider",
             "consult",
@@ -2910,7 +2900,8 @@
     "difficultWords":
     {
         "metadata": {
-            "name": "Difficult Words"
+            "name": "Difficult Words",
+            "description": "Words difficult to type on a QWERTY keyboard"
         },
         "words": [
             "minimum",
