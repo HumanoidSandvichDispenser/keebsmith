@@ -2,7 +2,7 @@
     <div>
         <PolyButton v-for="(radioOption, displayText) in radioOptions" :key="displayText" :selectedClass="selectedClass"
             :ref="'radioButton_' + displayText" type="radio" @toggle="radioButtonChanged($event.target, radioOption)">{{ displayText }}</PolyButton>
-        
+
         <PolyButton v-for="(checkboxOption, displayText) in checkboxOptions" :key="displayText" :selectedClass="selectedClass"
             type="checkbox" @toggle="checkboxChanged($event.target, checkboxOption)">{{ displayText }}</PolyButton>
     </div>
@@ -33,6 +33,9 @@ export default {
     },
 
     methods: {
+        /**
+         * Fired when user clicks a radio button
+         */
         radioButtonChanged: function(radioButton, option) {
             if (this.currentRadioButton != radioButton) {
                 if (this.currentRadioButton != null) {
@@ -47,6 +50,10 @@ export default {
 
             this.$emit("changed", { target: this });
         },
+
+        /**
+         * Fired when user clicks a checkbox
+         */
         checkboxChanged: function(checkbox, option) {
             if (checkbox.isSelected) {
                 this.checkboxValues[option] = true;
