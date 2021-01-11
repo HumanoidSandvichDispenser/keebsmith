@@ -1,5 +1,5 @@
 <template>
-    <div class="word-container">
+    <div :class="'word-container' + (isFavoriteWord ? ' favorite' : '')">
         <div class="cell-filler"></div>
         <div class="left" :style="[isCurrentWord ? 'text-decoration: underline;' : '']">
             {{ errorIndex == -1 ? word.slice(0, charIndex) : word.slice(0, errorIndex) }}
@@ -30,6 +30,7 @@ export default {
             default: "",
         },
         isCurrentWord: Boolean,
+        isFavoriteWord: Boolean,
     },
 
     methods: {

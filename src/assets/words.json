@@ -1,6 +1,5 @@
 {
-    "commonWords":
-    {
+    "commonWords": {
         "metadata": {
             "name": "Common Words",
             "description": "Common words used in American English"
@@ -2737,8 +2736,7 @@
             "zulu"
         ]
     },
-    "difficultWords":
-    {
+    "difficultWords": {
         "metadata": {
             "name": "Difficult Words",
             "description": "Words difficult to type on a QWERTY keyboard"
@@ -2771,5 +2769,21 @@
             "wretched",
             "calendar"
         ]
+    },
+    "favoriteWords": {
+        "metadata": {
+            "name": "Favorite Words",
+            "description": "Click on a word to favorite it!"
+        },
+        "words": [
+
+        ]
+    },
+    "wordPool": {
+        "metadata": {
+            "name": "Word Pool",
+            "description": "Large word pool containing around 275k English words. Intended to be used with regex filters."
+        },
+        "ref": ""
     }
 }

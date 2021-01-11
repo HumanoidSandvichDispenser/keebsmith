@@ -1,7 +1,8 @@
 <template>
     <div class="panel">
         <div id="word-list" ref="wordList">
-            <Word v-for="(word, index) in wordList" :key="index" :word="word" :ref="setWordRef" :isCurrentWord="index == currentWord"/>
+            <Word v-for="(word, index) in wordList" :key="index" :word="word" :ref="setWordRef" :isCurrentWord="index == currentWord"
+                :isFavoriteWord="wordSets.favoriteWords.words.includes(word)" @click="toggleArrayElement(wordSets.favoriteWords.words, word)"/>
         </div>
         <div id="textarea" style="float: left;">
             <input id="input-box" class="wide" ref="inputBox" placeholder="Type words here..." onpaste="return false" @keyup.enter="onEnter()" @input="inputChanged($event.target, $event.target.value)">
@@ -12,13 +13,21 @@
             <ButtonGroup :radioOptions="{ '2 (Burst)': 2, '10': 10, '25': 25, '50': 50, '100': 100, '150': 150, '200': 200 }"
                 default="25" ref="wordCountButton" selectedClass="selected" @changed="settingsChanged($event.target)"/>
 
-            <ButtonGroup :radioOptions="{ 'Common Words': wordSets.commonWords, 'Difficult Words': wordSets.difficultWords }"
+            <ButtonGroup :radioOptions="{ 'Common Words': wordSets.commonWords, 'Difficult Words': wordSets.difficultWords, 'Favorite Words': wordSets.favoriteWords }"
                 default="Common Words" ref="wordSetButton" selectedClass="selected-alt" @changed="settingsChanged($event.target)"/>
 
             <ButtonGroup :checkboxOptions="{ 'Accept Errors': 'isAcceptingErrors' }"
                 ref="flagsButton" selectedClass="selected-alt2" @changed="settingsChanged($event.target)"/>
 
-            <input ref="regexFilterBox" placeholder="Regex filter...">
+            <input ref="regexFilterBox" list="regex-templates" placeholder="Regex filter...">
+
+            <datalist id="regex-templates">
+                <option value="^[asdfjkl]+$">QWERTY Home Row</option>
+                <option value="^[aoeuhtns]+$">DVORAK 8-Key Home Row</option>
+                <option value="^[aoeuidhtns]+$">DVORAK Full Home Row</option>
+                <option value="^[eariotnslc]+$">10 Most Common Letters</option>
+                <option value="^[^z]+$">No &quot;Z&quot;</option>
+            </datalist>
         </div>
         <div id="speed-counter" v-if="isCompleted">{{ Math.round(cpm / 5) }} WPM ({{ cpm }} CPM)</div>
     </div>
@@ -43,6 +52,7 @@ export default {
             wordList: [],
             wordRefs: [],
             wordSets: words,
+            favoriteWords: [ "zoo" ],
 
             isStarted: false,
             isCompleted: false,
@@ -74,6 +84,19 @@ export default {
             if (element) {
                 console.log("set word ref, length")
                 this.wordRefs.push(element);
+            }
+        },
+
+        /**
+         * Adds element to an array or removes it if the element exists in the array
+         */
+        toggleArrayElement(arr, word) {
+            const index = arr.indexOf(word);
+
+            if (index == -1) {
+                arr.push(word);
+            } else {
+                arr.splice(index, 1);
             }
         },
 
