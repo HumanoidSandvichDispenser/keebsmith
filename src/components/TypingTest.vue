@@ -1,10 +1,10 @@
 <template>
-    <div id="typing-test">
+    <div class="panel">
         <div id="word-list" ref="wordList">
             <Word v-for="(word, index) in wordList" :key="index" :word="word" :ref="setWordRef" :isCurrentWord="index == currentWord"/>
         </div>
         <div id="textarea" style="float: left;">
-            <input id="input-box" ref="inputBox" placeholder="Type words here..." onpaste="return false" @keyup.enter="onEnter()" @input="inputChanged($event.target, $event.target.value)">
+            <input id="input-box" class="wide" ref="inputBox" placeholder="Type words here..." onpaste="return false" @keyup.enter="onEnter()" @input="inputChanged($event.target, $event.target.value)">
         </div>
         <div id="btn-container">
             <div class="btn accent" @click="restart()">⏎ Restart</div>
@@ -17,6 +17,8 @@
 
             <ButtonGroup :checkboxOptions="{ 'Accept Errors': 'isAcceptingErrors' }"
                 ref="flagsButton" selectedClass="selected-alt2" @changed="settingsChanged($event.target)"/>
+
+            <input ref="regexFilterBox" placeholder="Regex filter...">
         </div>
         <div id="speed-counter" v-if="isCompleted">{{ Math.round(cpm / 5) }} WPM ({{ cpm }} CPM)</div>
     </div>
@@ -164,8 +166,15 @@ export default {
          * Generates words to be pushed to wordList
          */
         generateWords: function(count) {
+            let words = this.settings.wordSet.words;
+            let filter = new RegExp(this.$refs.regexFilterBox.value);
+
+            if (filter != "") {
+                words = words.filter((word) => word.match(filter))
+            }
+
             for (let rep = 0; rep < count; rep++) {
-                let word = this.settings.wordSet.words[Math.floor(Math.random() * this.settings.wordSet.words.length)];
+                let word = words[Math.floor(Math.random() * words.length)];
                 this.totalCharCount += word.length + (rep < count - 1 ? 1 : 0); // count spaces in the total char count if it's not the last char
                 this.wordList.push(word);
             }
