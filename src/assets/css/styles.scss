@@ -7,8 +7,8 @@ html, body {
 }
 
 body {
-    background-color: var(--background-color);
-    color: var(--primary-color);
+    background-color: var(--bg0);
+    color: var(--fg0);
 }
 
 #app {
@@ -30,6 +30,16 @@ body {
     margin: 8px;
     float: left;
     white-space: pre;
+}
+
+.word-container.favorite .right {
+    color: var(--accentc);
+    transition-duration: 200ms;
+}
+
+.word-container:hover div {
+    background-color: var(--bg2);
+    transition-duration: 200ms;
 }
 
 .word-container > .left, .cell-filler {
@@ -66,16 +76,16 @@ body {
     left: 8px;
     top: -40px;
     */
-    color: var(--primary-mute);
+    color: var(--fg-mute);
 }
 
 input {
     margin: 8px;
     padding-bottom: 4px;
-    background-color: var(--background-mute);
-    color: var(--primary-color);
+    background-color: var(--bg1);
+    color: var(--fg0);
     border-width: 0 0 2px 0;
-    border-color: var(--background-3);
+    border-color: var(--bg1);
     font-size: 16px;
     font-family: 'Fira Code', 'Lato', 'Noto Sans', Arial, Helvetica, sans-serif;
     transition-duration: 200ms;
@@ -87,7 +97,7 @@ input.wide {
 }
 
 input:focus {
-    border-color: var(--primary-mute);
+    border-color: var(--fg-mute);
     outline: none;
     transition-duration: 100ms;
 }
@@ -99,7 +109,7 @@ input:focus {
     width: 768px;
     padding: 48px;
     border-radius: 32px;
-    background-color: var(--background-mute);
+    background-color: var(--bg1);
 }
 
 #word-list {
@@ -146,8 +156,8 @@ input:focus {
     min-width: 30px;
     font-size: 16px;
     padding: 4px 8px 4px 8px;
-    background-color: var(--background-3);
-    color: var(--primary);
+    background-color: var(--bg2);
+    color: var(--fg-0);
     margin: 4px;
     border-radius: 8px;
     font-weight: 500;
@@ -157,33 +167,33 @@ input:focus {
 
 .btn.accent {
     background-color: var(--accent);
-    color: var(--background-3);
+    color: var(--bg2);
 }
 
 .btn.selected {
     background-color: var(--accentc);
-    color: var(--background-3);
+    color: var(--bg2);
     transform: translate(0, 2px);
     transition-duration: 200ms;
 }
 
 .btn.selected-alt {
     background-color: var(--accentb);
-    color: var(--background-3);
+    color: var(--bg2);
     transform: translate(0, 2px);
     transition-duration: 200ms;
 }
 
 .btn.selected-alt2 {
     background-color: var(--accentd);
-    color: var(--background-3);
+    color: var(--bg2);
     transform: translate(0, 2px);
     transition-duration: 200ms;
 }
 
 .btn:active {
-    background-color: var(--primary-color);
-    color: var(--background-color);
+    background-color: var(--fg0);
+    color: var(--bg2);
     transform: translate(0, 4px);
     transition-duration: 200ms;
 }
@@ -195,12 +205,12 @@ input:focus {
 
 /* Track */
 ::-webkit-scrollbar-track {
-    background: var(--background-3);
+    background: var(--bg2);
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: var(--primary-color);
+    background: var(--fg0);
 }
 
 /* Handle on hover */
