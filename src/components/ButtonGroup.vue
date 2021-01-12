@@ -1,9 +1,11 @@
 <template>
     <div>
         <PolyButton v-for="(radioOption, displayText) in radioOptions" :key="displayText" :selectedClass="selectedClass"
+            :tooltip="tooltipKey ? deepKeyFromString(radioOption, tooltipKey) : undefined"
             :ref="'radioButton_' + displayText" type="radio" @toggle="radioButtonChanged($event.target, radioOption)">{{ displayText }}</PolyButton>
 
         <PolyButton v-for="(checkboxOption, displayText) in checkboxOptions" :key="displayText" :selectedClass="selectedClass"
+            :tooltip="tooltipKey ? deepKeyFromString(checkboxOption, tooltipKey) : undefined"
             type="checkbox" @toggle="checkboxChanged($event.target, checkboxOption)">{{ displayText }}</PolyButton>
     </div>
 </template>
@@ -30,6 +32,7 @@ export default {
         selectedClass: String,
         default: String,
         value: Object,
+        tooltipKey: String,
     },
 
     methods: {
@@ -62,6 +65,19 @@ export default {
             }
 
             this.$emit("changed", { target: this });
+        },
+
+        /**
+         * Returns a object nested in the specified keys separated by periods.
+         */
+        deepKeyFromString: function(obj, keys) {
+            // https://stackoverflow.com/questions/30027403/get-js-object-reference-by-multiple-level-string-value
+            var currentObj = obj;
+            keys.split(".").forEach(key => {
+                currentObj = currentObj[key];
+            });
+
+            return currentObj;
         }
     },
 

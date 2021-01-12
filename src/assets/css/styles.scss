@@ -11,6 +11,52 @@ body {
     color: var(--fg0);
 }
 
+[tooltip], [tooltip-fixed] {
+    position: relative;
+}
+
+[tooltip]:after, [tooltip-fixed]:before {
+    font-weight: 400;
+    white-space: nowrap;
+    padding: 4px;
+    border-radius: 4px;
+    opacity: 0;
+    color: var(--fg0);
+    background-color: var(--bg0);
+    transition: 200ms cubic-bezier(1,0, .95, .65);
+    pointer-events: none;
+    z-index: 50;
+}
+
+[tooltip]:after {
+    content: attr(tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, calc(-100% + 4px));
+}
+
+[tooltip]:hover:after {
+    opacity: 1;
+    bottom: 50%;
+    transition: 200ms ease-in;
+    transition-delay: 500ms;
+}
+
+[tooltip-fixed]:before {
+    content: attr(tooltip-fixed);
+    position: fixed;
+    transform: translate(-8px, calc(-100% + 4px));
+    width: inherit;
+}
+
+[tooltip-fixed]:hover:before {
+    opacity: 1;
+    transform: translate(-8px, calc(-100% - 4px));
+    transition: 200ms ease-in;
+    transition-delay: 500ms;
+}
+
 #app {
     font-family: 'Fira Mono', 'Lato', 'Noto Sans', Arial, Helvetica, sans-serif;
     margin: 0;
@@ -85,7 +131,7 @@ input {
     background-color: var(--bg1);
     color: var(--fg0);
     border-width: 0 0 2px 0;
-    border-color: var(--bg1);
+    border-color: var(--bg2);
     font-size: 16px;
     font-family: 'Fira Code', 'Lato', 'Noto Sans', Arial, Helvetica, sans-serif;
     transition-duration: 200ms;
@@ -103,6 +149,7 @@ input:focus {
 }
 
 .panel {
+    position: relative;
     display: inline-grid;
     grid-template-columns: 1fr auto;
     grid-template-rows: auto 1fr 1fr;
@@ -119,6 +166,9 @@ input:focus {
     grid-row-start: 1;
     grid-row-end: 2;
     max-height: 256px;
+}
+
+#word-list-overflow {
     overflow-y: auto;
 }
 

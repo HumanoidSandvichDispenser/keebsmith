@@ -1,16 +1,18 @@
 <template>
-    <div :class="'word-container' + (isFavoriteWord ? ' favorite' : '')">
-        <div class="cell-filler"></div>
-        <div class="left" :style="[isCurrentWord ? 'text-decoration: underline;' : '']">
-            {{ errorIndex == -1 ? word.slice(0, charIndex) : word.slice(0, errorIndex) }}
+    <div style="display: inline-block;" :tooltip-fixed="isFavoriteWord ? '♥️ Favorited' : '♡ Add to Favorites'">
+        <div :class="'word-container' + (isFavoriteWord ? ' favorite' : '')">
+            <div class="cell-filler"></div>
+            <div class="left" :style="[isCurrentWord ? 'text-decoration: underline;' : '']">
+                {{ errorIndex == -1 ? word.slice(0, charIndex) : word.slice(0, errorIndex) }}
+            </div>
+            <div v-if="errorIndex != -1" class="error" :style="[isCurrentWord ? 'text-decoration: underline;' : '']">
+                {{ word.slice(errorIndex, charIndex) + (charIndex > word.length  ? "•".repeat(charIndex - word.length) : "") }}
+            </div>
+            <div class="right" :style="[isCurrentWord ? 'text-decoration: underline;' : '']">
+                {{ word.slice(charIndex) }}
+            </div>
+            <div v-show="errorIndex != -1" class="error-input"> {{ inputText.replaceAll(" ", "⎵") }} </div>
         </div>
-        <div v-if="errorIndex != -1" class="error" :style="[isCurrentWord ? 'text-decoration: underline;' : '']">
-            {{ word.slice(errorIndex, charIndex) + (charIndex > word.length  ? "•".repeat(charIndex - word.length) : "") }}
-        </div>
-        <div class="right" :style="[isCurrentWord ? 'text-decoration: underline;' : '']">
-            {{ word.slice(charIndex) }}
-        </div>
-        <div v-show="errorIndex != -1" class="error-input"> {{ inputText.replaceAll(" ", "⎵") }} </div>
     </div>
 </template>
 

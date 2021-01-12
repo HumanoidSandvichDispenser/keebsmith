@@ -1,20 +1,22 @@
 <template>
     <div class="panel">
         <div id="word-list" ref="wordList">
-            <Word v-for="(word, index) in wordList" :key="index" :word="word" :ref="setWordRef" :isCurrentWord="index == currentWord"
-                :isFavoriteWord="wordSets.favoriteWords.words.includes(word)" @click="toggleArrayElement(wordSets.favoriteWords.words, word)"/>
+            <div id="word-list-overflow">
+                <Word v-for="(word, index) in wordList" :key="index" :word="word" :ref="setWordRef" :isCurrentWord="index == currentWord"
+                    :isFavoriteWord="wordSets.favoriteWords.words.includes(word)" @click="toggleArrayElement(wordSets.favoriteWords.words, word)"/>
+            </div>
         </div>
         <div id="textarea" style="float: left;">
             <input id="input-box" class="wide" ref="inputBox" placeholder="Type words here..." onpaste="return false" @keyup.enter="onEnter()" @input="inputChanged($event.target, $event.target.value)">
         </div>
         <div id="btn-container">
-            <div class="btn accent" @click="restart()">⏎ Restart</div>
+            <div tooltip="Restart Test" class="btn accent" @click="restart()">⏎ Restart</div>
 
             <ButtonGroup :radioOptions="{ '2 (Burst)': 2, '10': 10, '25': 25, '50': 50, '100': 100, '150': 150, '200': 200 }"
                 default="25" ref="wordCountButton" selectedClass="selected" @changed="settingsChanged($event.target)"/>
 
             <ButtonGroup :radioOptions="{ 'Common Words': wordSets.commonWords, 'Difficult Words': wordSets.difficultWords, 'Favorite Words': wordSets.favoriteWords }"
-                default="Common Words" ref="wordSetButton" selectedClass="selected-alt" @changed="settingsChanged($event.target)"/>
+                tooltipKey="metadata.description" default="Common Words" ref="wordSetButton" selectedClass="selected-alt" @changed="settingsChanged($event.target)"/>
 
             <ButtonGroup :checkboxOptions="{ 'Accept Errors': 'isAcceptingErrors' }"
                 ref="flagsButton" selectedClass="selected-alt2" @changed="settingsChanged($event.target)"/>
@@ -29,7 +31,7 @@
                 <option value="^[^z]+$">No &quot;Z&quot;</option>
             </datalist>
         </div>
-        <div id="speed-counter" v-if="isCompleted">{{ Math.round(cpm / 5) }} WPM ({{ cpm }} CPM)</div>
+        <div id="speed-counter" :tooltip="cpm + ' CPM'" v-if="isCompleted">{{ Math.round(cpm / 5) }} WPM</div>
     </div>
 </template>
 
@@ -40,6 +42,8 @@ import ButtonGroup from "./ButtonGroup";
 const words = require("../assets/words.json");
 
 export default {
+    name: "TypingTest",
+
     data() {
         return {
             wordCountSettings: [ 2, 10, 25, 50, 100, 150 ],
