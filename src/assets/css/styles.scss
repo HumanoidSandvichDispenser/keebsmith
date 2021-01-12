@@ -165,10 +165,10 @@ input:focus {
     grid-column-end: 3;
     grid-row-start: 1;
     grid-row-end: 2;
-    max-height: 256px;
 }
 
 #word-list-overflow {
+    max-height: 256px;
     overflow-y: auto;
 }
 
